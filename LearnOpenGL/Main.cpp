@@ -13,6 +13,8 @@ void processInput(GLFWwindow* window);
 void Render(GLFWwindow* window, Shader shader);
 void BindTexture(unsigned int& texture, const char* imagePath);
 void CalculateTime();
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 
 Shader InitShader();
@@ -37,6 +39,13 @@ vec3 cameraPos = vec3(0.0f, 0.0f, 3.0f);
 vec3 cameraFront = vec3(.0f, .0f, -1.0f);
 vec3 cameraUp = vec3(.0f, .0f, .0f);
 
+bool firstMouse = true;
+float Yaw = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
+float Pitch = 0.0f;
+float lastX = 800.0f / 2.0;
+float lastY = 600.0 / 2.0;
+float fov = 45.0f;
+
 float deltaTime = 0.0f;
 
 
@@ -60,8 +69,14 @@ int main()
 		return -1;
 	}
 
+	// tell GLFW to capture our mouse
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetScrollCallback(window, scroll_callback);
+
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
 		std::cout << "Faild to initialize GLAD" << std::endl;
@@ -220,7 +235,7 @@ void Render(GLFWwindow* window, Shader shader) {
 
 		//view = rotate(view, radians(viewVel), vec3(0.0f, 1.0f, 0.0f));
 
-		projection = perspective(radians(90.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		projection = perspective(radians(fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 
 		unsigned int viewLoc = glGetUniformLocation(shader.ID, "view");
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, value_ptr(view));
@@ -250,7 +265,7 @@ void Render(GLFWwindow* window, Shader shader) {
 			// calculate the model matrix for each object and pass it to shader before drawing
 			mat4 model = mat4(1.0f);
 			model = translate(model, cubePositions[i]);
-			float angle = 20.0f * i * glfwGetTime();
+			float angle = 100.0f * i * glfwGetTime();
 			model = rotate(model, radians(angle), vec3(1.0f, 0.3f, 0.5f));
 
 			unsigned int modelLoc = glGetUniformLocation(shader.ID, "model");
@@ -303,4 +318,52 @@ void CalculateTime()
 	deltaTime = currentFrame - lastFrameTime;
 	lastFrameTime = currentFrame;
 }
+
+void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
+{
+	float xpos = static_cast<float>(xposIn);
+	float ypos = static_cast<float>(yposIn);
+
+	if (firstMouse)
+	{
+		lastX = xpos;
+		lastY = ypos;
+		firstMouse = false;
+	}
+
+	float xoffset = xpos - lastX;
+	float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+	lastX = xpos;
+	lastY = ypos;
+
+	float sensitivity = 0.1f; // change this value to your liking
+	xoffset *= sensitivity;
+	yoffset *= sensitivity;
+
+	Yaw += xoffset;
+	Pitch += yoffset;
+
+	// make sure that when Pitch is out of bounds, screen doesn't get flipped
+	if (Pitch > 89.0f)
+		Pitch = 89.0f;
+	if (Pitch < -89.0f)
+		Pitch = -89.0f;
+
+	glm::vec3 front;
+	front.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
+	front.y = sin(glm::radians(Pitch));
+	front.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
+	cameraFront = glm::normalize(front);
+}
+
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+	fov -= (float)yoffset;
+	if (fov < 1.0f)
+		fov = 1.0f;
+	if (fov > 45.0f)
+		fov = 45.0f;
+}
+
+
 
