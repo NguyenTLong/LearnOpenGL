@@ -8,6 +8,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "camera.h"
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 void Render(GLFWwindow* window, Shader shader);
@@ -24,8 +26,8 @@ using namespace glm;
 
 
 // setting
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+const unsigned int SCR_WIDTH = 1270;
+const unsigned int SCR_HEIGHT = 720;
 
 unsigned int shaderProgram;
 unsigned int VAO;
@@ -38,6 +40,7 @@ unsigned int texture2;
 vec3 cameraPos = vec3(0.0f, 0.0f, 3.0f);
 vec3 cameraFront = vec3(.0f, .0f, -1.0f);
 vec3 cameraUp = vec3(.0f, .0f, .0f);
+Camera camera(vec3(0.0f, .0f, 3.0f));
 
 bool firstMouse = true;
 float Yaw = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
@@ -70,12 +73,13 @@ int main()
 	}
 
 	// tell GLFW to capture our mouse
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
+
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
@@ -220,29 +224,11 @@ void Render(GLFWwindow* window, Shader shader) {
 		mat4 projection = mat4(1.0f);
 		mat4 view = mat4(1.0f);
 
-	
-		vec3 cameraTarget = vec3(.0f, .0f, .0f);
-		vec3 cameraDirection = normalize(cameraPos - cameraTarget);
+		view = camera.GetViewMatrix();
+		shader.setMat4("view", view);
 
-		vec3 up = vec3(.0f, 1.0f, .0f);
-		vec3 cameraRight = normalize(cross(up, cameraDirection));
-
-		cameraUp = cross(cameraDirection, cameraRight);
-
-		view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-
-		//view = translate(view, viewPos);
-
-		//view = rotate(view, radians(viewVel), vec3(0.0f, 1.0f, 0.0f));
-
-		projection = perspective(radians(fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-
-		unsigned int viewLoc = glGetUniformLocation(shader.ID, "view");
-		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, value_ptr(view));
-
-		unsigned int projectionLoc = glGetUniformLocation(shader.ID, "projection");
-		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, value_ptr(projection));
-
+		projection = perspective(radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		shader.setMat4("projection", projection);
 
 		// world space positions of our cubes
 		vec3 cubePositions[] = {
@@ -299,20 +285,19 @@ void processInput(GLFWwindow* window)
 		glfwSetWindowShouldClose(window, true);
 	}
 
-	const float cameraSpeed = 2.5f * deltaTime; // adjust accordingly
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		cameraPos += cameraSpeed * cameraFront;
+		camera.ProcessKeyboard(FORWARD, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		cameraPos -= cameraSpeed * cameraFront;
+		camera.ProcessKeyboard(BACKWARD, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		camera.ProcessKeyboard(LEFT, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		camera.ProcessKeyboard(RIGHT, deltaTime);
 
 }
 
 float lastFrameTime = 0.0f;
-void CalculateTime() 
+void CalculateTime()
 {
 	float currentFrame = glfwGetTime();
 	deltaTime = currentFrame - lastFrameTime;
@@ -333,36 +318,16 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 
 	float xoffset = xpos - lastX;
 	float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+
 	lastX = xpos;
 	lastY = ypos;
 
-	float sensitivity = 0.1f; // change this value to your liking
-	xoffset *= sensitivity;
-	yoffset *= sensitivity;
-
-	Yaw += xoffset;
-	Pitch += yoffset;
-
-	// make sure that when Pitch is out of bounds, screen doesn't get flipped
-	if (Pitch > 89.0f)
-		Pitch = 89.0f;
-	if (Pitch < -89.0f)
-		Pitch = -89.0f;
-
-	glm::vec3 front;
-	front.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
-	front.y = sin(glm::radians(Pitch));
-	front.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
-	cameraFront = glm::normalize(front);
+	camera.ProcessMouseMovement(xoffset, yoffset);
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	fov -= (float)yoffset;
-	if (fov < 1.0f)
-		fov = 1.0f;
-	if (fov > 45.0f)
-		fov = 45.0f;
+	camera.ProccessMouseScroll(static_cast<float>(yoffset));
 }
 
 

@@ -1,5 +1,5 @@
 ﻿  Main.cpp
-C:\Users\long.nguyen\source\repos\LearnOpenGL\LearnOpenGL\Main.cpp(268,16): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\long.nguyen\source\repos\LearnOpenGL\LearnOpenGL\Main.cpp(293,17): warning C4305: 'initializing': truncation from 'double' to 'float'
-C:\Users\long.nguyen\source\repos\LearnOpenGL\LearnOpenGL\Main.cpp(317,21): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\long.nguyen\source\repos\LearnOpenGL\LearnOpenGL\Main.cpp(254,16): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\long.nguyen\source\repos\LearnOpenGL\LearnOpenGL\Main.cpp(279,17): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\long.nguyen\source\repos\LearnOpenGL\LearnOpenGL\Main.cpp(302,21): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
   LearnOpenGL.vcxproj -> C:\Users\long.nguyen\source\repos\LearnOpenGL\x64\Debug\LearnOpenGL.exe
