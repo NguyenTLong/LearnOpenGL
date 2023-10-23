@@ -2,6 +2,9 @@
 out vec4 FragColor;
 
 in vec2 TexCoord;
+in vec3 Normal;
+
+uniform vec3 lightPos;
 
 uniform sampler2D texture1;
 uniform sampler2D texture2;

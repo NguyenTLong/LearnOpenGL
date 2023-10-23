@@ -151,7 +151,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="fragment.glsl" />
+    <None Include="frag_container.glsl" />
+    <None Include="frag_light.glsl" />
     <None Include="vertex.glsl" />
+    <None Include="vert_container.glsl" />
+    <None Include="vert_light.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="image.jpg" />

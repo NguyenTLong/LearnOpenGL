@@ -49,6 +49,18 @@
     <None Include="fragment.glsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="vert_container.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="frag_container.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="frag_light.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="vert_light.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="wall.jpg">
