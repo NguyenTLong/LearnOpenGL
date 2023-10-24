@@ -158,6 +158,7 @@
     <None Include="vert_light.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="container2.png" />
     <Image Include="image.jpg" />
     <Image Include="wall.jpg" />
   </ItemGroup>

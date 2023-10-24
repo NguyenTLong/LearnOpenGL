@@ -1,8 +1,7 @@
 ﻿  Main.cpp
-C:\Users\long.nguyen\source\repos\LearnOpenGL\LearnOpenGL\Main.cpp(171,76): warning C4353: nonstandard extension used: constant 0 as function expression.  Use '__noop' function intrinsic instead
-C:\Users\long.nguyen\source\repos\LearnOpenGL\LearnOpenGL\Main.cpp(229,24): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-C:\Users\long.nguyen\source\repos\LearnOpenGL\LearnOpenGL\Main.cpp(229,20): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-C:\Users\long.nguyen\source\repos\LearnOpenGL\LearnOpenGL\Main.cpp(229,16): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-C:\Users\long.nguyen\source\repos\LearnOpenGL\LearnOpenGL\Main.cpp(281,17): warning C4305: 'initializing': truncation from 'double' to 'float'
-C:\Users\long.nguyen\source\repos\LearnOpenGL\LearnOpenGL\Main.cpp(304,21): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\long.nguyen\source\repos\LearnOpenGL\LearnOpenGL\Main.cpp(234,24): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Users\long.nguyen\source\repos\LearnOpenGL\LearnOpenGL\Main.cpp(234,20): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Users\long.nguyen\source\repos\LearnOpenGL\LearnOpenGL\Main.cpp(234,16): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Users\long.nguyen\source\repos\LearnOpenGL\LearnOpenGL\Main.cpp(296,17): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\long.nguyen\source\repos\LearnOpenGL\LearnOpenGL\Main.cpp(319,21): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
   LearnOpenGL.vcxproj -> C:\Users\long.nguyen\source\repos\LearnOpenGL\x64\Debug\LearnOpenGL.exe
