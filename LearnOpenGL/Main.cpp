@@ -36,6 +36,7 @@ unsigned int VAO;
 unsigned int VBO;
 
 unsigned int diffuseMap;
+unsigned int specularMap;
 
 Shader ourShader;
 Shader lightShader;
@@ -186,6 +187,10 @@ void InitShader() {
 	ourShader.use();
 	ourShader.setInt("material.diffuse", 0);
 
+	BindTexture(specularMap, "specular.png");
+	ourShader.use();
+	ourShader.setInt("material.specular", 1);
+
 	glEnable(GL_DEPTH_TEST);
 }
 
@@ -249,7 +254,6 @@ void Render(GLFWwindow* window) {
 		ourShader.setVec3("viewPos", camera.Position);
 
 		ourShader.setVec3("material.ambient", vec3(1.0f, 0.5f, 0.31f));
-		ourShader.setVec3("material.specular", vec3(0.5f, 0.5f, 0.5f));
 		ourShader.setFloat("material.shininess", 32.0f);
 
 		ourShader.setVec3("light.ambient", vec3(.2f));
@@ -272,6 +276,9 @@ void Render(GLFWwindow* window) {
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, diffuseMap);
+
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, specularMap);
 
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);

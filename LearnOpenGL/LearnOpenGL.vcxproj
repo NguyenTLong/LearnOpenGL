@@ -160,6 +160,7 @@
   <ItemGroup>
     <Image Include="container2.png" />
     <Image Include="image.jpg" />
+    <Image Include="specular.png" />
     <Image Include="wall.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
