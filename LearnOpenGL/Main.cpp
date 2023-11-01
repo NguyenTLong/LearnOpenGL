@@ -229,12 +229,20 @@ void BindTexture(unsigned int& texture, const char* imagePath)
 void Render(GLFWwindow* window) {
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	int const cubeCount = 10;
+	int const cubeCount = 20;
 	vec3* cubePositions = new vec3[cubeCount];
 	for (size_t i = 0; i < cubeCount; i++)
 	{
 		cubePositions[i] = vec3(rand() % 10 - 5, rand() % 10 - 5, rand() % 10 - 5);
 	}
+
+	glm::vec3 pointLightPositions[] = {
+		glm::vec3(0.7f,  0.2f,  2.0f),
+		glm::vec3(2.3f, -3.3f, -4.0f),
+		glm::vec3(-4.0f,  2.0f, -12.0f),
+		glm::vec3(0.0f,  0.0f, -3.0f)
+	};
+
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -247,25 +255,75 @@ void Render(GLFWwindow* window) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		ourShader.use();
-		ourShader.setVec3("light.position", camera.Position);
-		ourShader.setVec3("light.direction", camera.Front);
-		ourShader.setFloat("light.cutOff", cos(radians(12.5f)));
-		ourShader.setFloat("light.outerCutOff", cos(radians(17.5f)));
+		ourShader.setVec3("dirLight.direction", vec3(-0.2f, -1.0f, -.3f));
+		ourShader.setVec3("dirLight.ambient", vec3(.05f));
+		ourShader.setVec3("dirLight.diffuse", vec3(.4f));
+		ourShader.setVec3("dirLight.specular", vec3(.5f));
+		
+		//for (int i = 0; i < 4; i++)
+		//{
+		//	std::string pointLightName = std::string("pointLights[") + std::string(i + "]");
+		//	ourShader.setVec3(pointLightName + ".position", pointLightPositions[i]);
+		//	ourShader.setVec3(pointLightName + ".ambient", vec3(0.05f, 0.05f, 0.05f));
+		//	ourShader.setVec3(pointLightName + ".diffuse", vec3(0.8f, 0.8f, 0.8f));
+		//	ourShader.setVec3(pointLightName + ".specular", vec3(1.0f, 1.0f, 1.0f));
+		//	ourShader.setFloat(pointLightName + ".constant", 1.0f);
+		//	ourShader.setFloat(pointLightName + ".linear", 0.09f);
+		//	ourShader.setFloat(pointLightName + ".quadratic", 0.032f);
+
+		//	std::cout << "construct light " << i << std::endl;
+		//}
+
+		// point light 1
+		ourShader.setVec3("pointLights[0].position", pointLightPositions[0]);
+		ourShader.setVec3("pointLights[0].ambient",	vec3(0.05f, 0.05f, 0.05f));
+		ourShader.setVec3("pointLights[0].diffuse", vec3(0.8f, 0.8f, 0.8f));
+		ourShader.setVec3("pointLights[0].specular", vec3(1.0f, 1.0f, 1.0f));
+		ourShader.setFloat("pointLights[0].constant", 1.0f);
+		ourShader.setFloat("pointLights[0].linear", 0.09f);
+		ourShader.setFloat("pointLights[0].quadratic", 0.032f);
+		// point light 2
+		ourShader.setVec3("pointLights[1].position", pointLightPositions[1]);
+		ourShader.setVec3("pointLights[1].ambient", vec3(0.05f, 0.05f, 0.05f));
+		ourShader.setVec3("pointLights[1].diffuse", vec3(0.8f, 0.8f, 0.8f));
+		ourShader.setVec3("pointLights[1].specular", vec3(1.0f, 1.0f, 1.0f));
+		ourShader.setFloat("pointLights[1].constant", 1.0f);
+		ourShader.setFloat("pointLights[1].linear", 0.09f);
+		ourShader.setFloat("pointLights[1].quadratic", 0.032f);
+		// point light 3
+		ourShader.setVec3("pointLights[2].position", pointLightPositions[2]);
+		ourShader.setVec3("pointLights[2].ambient", vec3(0.05f, 0.05f, 0.05f));
+		ourShader.setVec3("pointLights[2].diffuse", vec3(0.8f, 0.8f, 0.8f));
+		ourShader.setVec3("pointLights[2].specular", vec3(1.0f, 1.0f, 1.0f));
+		ourShader.setFloat("pointLights[2].constant", 1.0f);
+		ourShader.setFloat("pointLights[2].linear", 0.09f);
+		ourShader.setFloat("pointLights[2].quadratic", 0.032f);
+		// point light 4
+		ourShader.setVec3("pointLights[3].position", pointLightPositions[3]);
+		ourShader.setVec3("pointLights[3].ambient", vec3(0.05f, 0.05f, 0.05f));
+		ourShader.setVec3("pointLights[3].diffuse", vec3(0.8f, 0.8f, 0.8f));
+		ourShader.setVec3("pointLights[3].specular", vec3(1.0f, 1.0f, 1.0f));
+		ourShader.setFloat("pointLights[3].constant", 1.0f);
+		ourShader.setFloat("pointLights[3].linear", 0.09f);
+		ourShader.setFloat("pointLights[3].quadratic", 0.032f);
+			
+
+		ourShader.setVec3("spotLight.position", camera.Position);
+		ourShader.setVec3("spotLight.direction", camera.Front);
+		ourShader.setVec3("spotLight.ambient", vec3(0.0f));
+		ourShader.setVec3("spotLight.diffuse", vec3(1.0f));
+		ourShader.setVec3("spotLight.specular", vec3(1.0f));
+		ourShader.setFloat("spotLight.constant", 1.0f);
+		ourShader.setFloat("spotLight.linear", 0.09f);
+		ourShader.setFloat("spotLight.quadratic", 0.032f);
+		ourShader.setFloat("spotLight.cutOff", cos(radians(12.5f)));
+		ourShader.setFloat("spotLight.outerCutOff", cos(radians(15.0f)));
+
 
 		ourShader.setVec3("objectColor", vec3(1.0f, 1.0f, 1.0f));
 		ourShader.setVec3("viewPos", camera.Position);
 
 		ourShader.setVec3("material.ambient", vec3(1.0f, 0.5f, 0.31f));
-
-		ourShader.setVec3("light.ambient", vec3(.1f));
-		ourShader.setVec3("light.diffuse", vec3(.8f));
-		ourShader.setVec3("light.specular", vec3(1.0f));
-
-
-		ourShader.setFloat("light.constant", 1.0f);
-		ourShader.setFloat("light.linear", 0.09f);
-		ourShader.setFloat("light.quadratic", 0.032f);
-
 		ourShader.setFloat("material.shininess", 32.0f);
 
 
@@ -289,7 +347,7 @@ void Render(GLFWwindow* window) {
 		
 		glBindVertexArray(VAO);
 
-		for (unsigned int i = 0; i < 10; i++)
+		for (unsigned int i = 0; i < cubeCount; i++)
 		{
 			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, cubePositions[i]);
@@ -299,19 +357,25 @@ void Render(GLFWwindow* window) {
 
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
-		//glDrawArrays(GL_TRIANGLES, 0, 36);
-
 
 		lightShader.use();
 		lightShader.setMat4("view", view);
 		lightShader.setMat4("projection", projection);
-		model = mat4(1.0f);
-		model = translate(model, lightPos);
-		model = scale(model, glm::vec3(0.2f));
-		lightShader.setMat4("model", model);
 
 		glBindVertexArray(lightVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		for (unsigned int i = 0; i < 4; i++)
+		{
+			glm::mat4 model = glm::mat4(1.0f);
+			model = glm::translate(model, pointLightPositions[i]);
+			model = scale(model, vec3(.1f));
+			float angle = 20.0f * i;
+			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+			lightShader.setMat4("model", model);
+
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
+
 
 		// check and call events, and swap the buffers
 		glfwSwapBuffers(window);
