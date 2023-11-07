@@ -22,6 +22,8 @@ void CalculateTime();
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 float DotProduct(vec3 vectorA, vec3 vectorB);
+mat4 GetPerspectiveProjectionMatrix(float FOV, float aspectRatio, float near, float far);
+void PrintMat4(mat4 matrix);
 
 using namespace glm;
 using namespace std;
@@ -93,13 +95,15 @@ int main()
 	//stbi_set_flip_vertically_on_load(true);
 
 	glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_STENCIL_TEST);
+	glEnable(GL_CULL_FACE);
 	ourShader.Init("vert_container.glsl", "frag_container.glsl");
 	lightShader.Init("vert_light.glsl", "frag_light.glsl");
 	std::cout << "load shader model" << std::endl;
 	ourModel.Init("../LearnOpenGL/resourses/models/backpack/backpack.obj");
 	ourLightModel.Init("../LearnOpenGL/resourses/models/suzanne/suzanne.fbx");
 	std::cout << "init model" << std::endl;
-	Render(window, ourShader, ourModel );
+	Render(window, ourShader, ourModel);
 
 	glfwTerminate();
 	return 0;
@@ -115,7 +119,7 @@ void Render(GLFWwindow* window, Shader shader, Model model) {
 		glm::vec3(-4.0f,  2.0f, -12.0f),
 		glm::vec3(0.0f,  0.0f, -3.0f)
 	};
-	
+
 	vec3 pointLightColor[]{
 		vec3(1.0f, 0.0f, 0.0f),
 		vec3(0.0f, 1.0f, 0.0f),
@@ -142,7 +146,7 @@ void Render(GLFWwindow* window, Shader shader, Model model) {
 
 		// point light 1
 		shader.setVec3("pointLights[0].position", pointLightPositions[0]);
-		shader.setVec3("pointLights[0].ambient",	pointLightColor[0]);
+		shader.setVec3("pointLights[0].ambient", pointLightColor[0]);
 		shader.setVec3("pointLights[0].diffuse", vec3(1.0f, 0.0f, 0.0f));
 		shader.setVec3("pointLights[0].specular", vec3(1.0f, 1.0f, 1.0f));
 		shader.setFloat("pointLights[0].constant", 1.0f);
@@ -172,7 +176,7 @@ void Render(GLFWwindow* window, Shader shader, Model model) {
 		shader.setFloat("pointLights[3].constant", 1.0f);
 		shader.setFloat("pointLights[3].linear", 0.09f);
 		shader.setFloat("pointLights[3].quadratic", 0.032f);
-			
+
 
 		shader.setVec3("spotLight.position", camera.Position);
 		shader.setVec3("spotLight.direction", camera.Front);
@@ -197,15 +201,19 @@ void Render(GLFWwindow* window, Shader shader, Model model) {
 		mat4 view = mat4(1.0f);
 		mat4 model = glm::mat4(1.0f);
 
-		projection = perspective(radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		/*projection = perspective(radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		PrintMat4(projection);*/
+		projection = GetPerspectiveProjectionMatrix(radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		//PrintMat4(projection);
 		view = camera.GetViewMatrix();
 
 
 		shader.setMat4("view", view);
 		shader.setMat4("projection", projection);
 		shader.setMat4("model", model);
+
 		
-		ourModel.Draw(ourShader);
+		ourModel.Draw(shader);
 
 		lightShader.use();
 		lightShader.setMat4("view", view);
@@ -219,7 +227,7 @@ void Render(GLFWwindow* window, Shader shader, Model model) {
 			lightShader.setVec3("objectColor", pointLightColor[i] * dotProd);
 			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, pointLightPositions[i]);
-			model = scale(model, vec3(.3f ));
+			model = scale(model, vec3(.3f));
 			float angle = 20.0f * i;
 			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 			lightShader.setMat4("model", model);
@@ -227,10 +235,10 @@ void Render(GLFWwindow* window, Shader shader, Model model) {
 
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
-			//std::cout << "Dot: " << dotProd << std::endl;
+		//std::cout << "Dot: " << dotProd << std::endl;
 
 
-		// check and call events, and swap the buffers
+	// check and call events, and swap the buffers
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 
@@ -297,11 +305,40 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 }
 
 float DotProduct(vec3 vectorA, vec3 vectorB)
-{	
+{
 	vec3 vecA = normalize(vectorA);
 	vec3 vecB = normalize(vectorB);
 
 	float returnVal = vecA.x * vecB.x + vecA.y * vecB.y + vecA.z * vecB.z;
 	return returnVal;
+}
+
+mat4 GetPerspectiveProjectionMatrix(float FOV, float aspectRatio, float near, float far)
+{
+	mat4 projectionMatrix;
+	float f = 1 / (tan(FOV / 2.0f));
+	float zRange = far - near;
+	float A = -(far + near) / zRange;
+	float B = -(2 * far * near) / zRange;
+	projectionMatrix[0][0] = f/aspectRatio;
+	projectionMatrix[1][1] = f;
+	projectionMatrix[2][2] = A;
+	projectionMatrix[2][3] = -1.0f;
+	projectionMatrix[3][2] = B;
+	projectionMatrix[3][3] = 0.0f;
+
+	return projectionMatrix;
+}
+
+void PrintMat4(mat4 matrix)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			std::cout << " " << matrix[i][j];
+		}
+		cout << endl;
+	}
 }
 
