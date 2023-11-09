@@ -24,6 +24,8 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 float DotProduct(vec3 vectorA, vec3 vectorB);
 mat4 GetPerspectiveProjectionMatrix(float FOV, float aspectRatio, float near, float far);
 void PrintMat4(mat4 matrix);
+unsigned int loadCubemap(vector<string> faces);
+
 
 using namespace glm;
 using namespace std;
@@ -41,6 +43,8 @@ Shader ourShader;
 Model ourModel;
 Shader lightShader;
 Model ourLightModel;
+
+Shader skyboxShader;
 
 vec3 lightPos = vec3(1.2f, 1.0f, 2.0f);
 
@@ -97,11 +101,12 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 	//glEnable(GL_STENCIL_TEST);
 	glEnable(GL_CULL_FACE);
-	ourShader.Init("vert_container.glsl", "frag_container.glsl");
+	ourShader.Init("vert_container.glsl", "frag_container_refraction.glsl");
 	lightShader.Init("vert_light.glsl", "frag_light.glsl");
 	std::cout << "load shader model" << std::endl;
 	ourModel.Init("../LearnOpenGL/resourses/models/backpack/backpack.obj");
 	ourLightModel.Init("../LearnOpenGL/resourses/models/suzanne/suzanne.fbx");
+	skyboxShader.Init("vert_skybox.glsl", "frag_skybox.glsl");
 	std::cout << "init model" << std::endl;
 	Render(window, ourShader, ourModel);
 
@@ -126,6 +131,78 @@ void Render(GLFWwindow* window, Shader shader, Model model) {
 		vec3(0.0f, 0.0f, 1.0f),
 		vec3(1.0f),
 	};
+
+	float skyboxVertices[] = {
+		// positions          
+		-1.0f,  1.0f, -1.0f,
+		-1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+
+		-1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+
+		-1.0f, -1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		-1.0f,  1.0f, -1.0f,
+		 1.0f,  1.0f, -1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f, -1.0f,
+
+		-1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		 1.0f, -1.0f,  1.0f
+	};
+
+	unsigned int skyboxVAO, skyboxVBO;
+	glGenVertexArrays(1, &skyboxVAO);
+	glGenBuffers(1, &skyboxVBO);
+	glBindVertexArray(skyboxVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+	vector<string>  faces
+	{
+		"right.jpg"
+		, "left.jpg"
+		, "top.jpg"
+		, "bottom.jpg"
+		, "front.jpg"
+		, "back.jpg"
+	};
+
+	unsigned int cubemapTexture = loadCubemap(faces);
+
+	skyboxShader.use();
+	skyboxShader.setInt("skybox", 0);
+
+	ourShader.use();
+	ourShader.setInt("skybox", 0);
 
 
 	while (!glfwWindowShouldClose(window))
@@ -212,7 +289,7 @@ void Render(GLFWwindow* window, Shader shader, Model model) {
 		shader.setMat4("projection", projection);
 		shader.setMat4("model", model);
 
-		
+
 		ourModel.Draw(shader);
 
 		lightShader.use();
@@ -235,6 +312,20 @@ void Render(GLFWwindow* window, Shader shader, Model model) {
 
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
+
+		// draw skybox as last
+		glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
+		skyboxShader.use();
+		view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // remove translation from the view matrix
+		skyboxShader.setMat4("view", view);
+		skyboxShader.setMat4("projection", projection);
+		// skybox cube
+		glBindVertexArray(skyboxVAO);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glBindVertexArray(0);
+		glDepthFunc(GL_LESS);
 		//std::cout << "Dot: " << dotProd << std::endl;
 
 
@@ -320,7 +411,7 @@ mat4 GetPerspectiveProjectionMatrix(float FOV, float aspectRatio, float near, fl
 	float zRange = far - near;
 	float A = -(far + near) / zRange;
 	float B = -(2 * far * near) / zRange;
-	projectionMatrix[0][0] = f/aspectRatio;
+	projectionMatrix[0][0] = f / aspectRatio;
 	projectionMatrix[1][1] = f;
 	projectionMatrix[2][2] = A;
 	projectionMatrix[2][3] = -1.0f;
@@ -340,5 +431,36 @@ void PrintMat4(mat4 matrix)
 		}
 		cout << endl;
 	}
+}
+
+unsigned int loadCubemap(vector<string> faces)
+{
+	unsigned int textureID;
+	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+
+	int width, height, nrChannel;
+	for (unsigned int i = 0; i < faces.size(); i++)
+	{
+		unsigned char* data = stbi_load(faces[i].c_str(), &width, &height, &nrChannel, 0);
+
+		if (data)
+		{
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		}
+		else
+		{
+			std::cout << "cubemap Tex failed to load at path" << faces[i] << endl;
+		}
+		stbi_image_free(data);
+	}
+
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+	return textureID;
 }
 

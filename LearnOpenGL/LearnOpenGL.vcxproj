@@ -168,15 +168,25 @@
   <ItemGroup>
     <None Include="fragment.glsl" />
     <None Include="frag_container.glsl" />
+    <None Include="frag_container_reflection.glsl" />
+    <None Include="frag_container_refraction.glsl" />
     <None Include="frag_light.glsl" />
+    <None Include="frag_skybox.glsl" />
     <None Include="vertex.glsl" />
     <None Include="vert_container.glsl" />
     <None Include="vert_light.glsl" />
+    <None Include="vert_skybox.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="back.jpg" />
+    <Image Include="bottom.jpg" />
     <Image Include="container2.png" />
+    <Image Include="front.jpg" />
     <Image Include="image.jpg" />
+    <Image Include="left.jpg" />
+    <Image Include="right.jpg" />
     <Image Include="specular.png" />
+    <Image Include="top.jpg" />
     <Image Include="wall.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

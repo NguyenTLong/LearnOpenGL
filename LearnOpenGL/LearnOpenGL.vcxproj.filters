@@ -73,6 +73,18 @@
     <None Include="vert_light.glsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="frag_skybox.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="vert_skybox.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="frag_container_reflection.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="frag_container_refraction.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="wall.jpg">
@@ -85,6 +97,24 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="specular.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="back.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="front.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="left.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="right.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="top.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="bottom.jpg">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
