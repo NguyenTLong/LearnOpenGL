@@ -170,11 +170,17 @@
     <None Include="frag_container.glsl" />
     <None Include="frag_container_reflection.glsl" />
     <None Include="frag_container_refraction.glsl" />
+    <None Include="frag_debug_quad_depth.glsl" />
     <None Include="frag_light.glsl" />
+    <None Include="frag_shadow_mapping.glsl" />
+    <None Include="frag_shadow_mapping_depth.glsl" />
     <None Include="frag_skybox.glsl" />
     <None Include="vertex.glsl" />
     <None Include="vert_container.glsl" />
+    <None Include="vert_debug_quad_depth.glsl" />
     <None Include="vert_light.glsl" />
+    <None Include="vert_shadow_mapping.glsl" />
+    <None Include="vert_shadow_mapping_depth.glsl" />
     <None Include="vert_skybox.glsl" />
   </ItemGroup>
   <ItemGroup>

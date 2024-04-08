@@ -104,7 +104,7 @@ public:
 
 	}
 
-	void ProccessMouseScroll(float yOffset)
+	void ProcessMouseScroll(float yOffset)
 	{
 		Zoom -= yOffset;
 		if (Zoom < 1.0f)

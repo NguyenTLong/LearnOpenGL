@@ -85,6 +85,24 @@
     <None Include="frag_container_refraction.glsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="vert_shadow_mapping_depth.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="frag_shadow_mapping_depth.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="vert_debug_quad_depth.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="frag_debug_quad_depth.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="vert_shadow_mapping.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="frag_shadow_mapping.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="wall.jpg">
